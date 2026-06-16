@@ -154,6 +154,62 @@ Users can then install with:
 openclaw plugins install clawhub:<owner>/openclaw-skill-curator
 ```
 
+## End-to-end test
+
+Use a neutral demo workflow when testing the plugin. Do not rely on local scripts, private infrastructure, or machine-specific examples.
+
+Example prompt:
+
+```text
+TEST_SKILL_CURATOR_DEMO: Check this demo release checklist and report missing items, risks, and next action: docs ready, tests pending, rollback plan missing.
+```
+
+### Quick detector test
+
+Use this when you only want to confirm that observation capture and clustering work.
+
+1. Send the example prompt once in a normal OpenClaw chat.
+2. Run the report with relaxed thresholds:
+
+```bash
+openclaw skill-curator report \
+  --ready-only \
+  --min-occurrences 1 \
+  --min-sessions 1 \
+  --min-confidence 0.3 \
+  --json
+```
+
+Expected result:
+
+- the report is not empty;
+- a candidate references the demo release checklist request;
+- the candidate has `recommendation: "propose"` when it passes the relaxed thresholds.
+
+These relaxed thresholds are for testing only. They are intentionally noisier than the production defaults.
+
+### Full readiness test
+
+Use this when you want to test the real readiness behavior.
+
+1. Open three separate OpenClaw sessions.
+2. In each session, send the same demo prompt or a very close variation.
+3. Run:
+
+```bash
+openclaw skill-curator report --ready-only --json
+```
+
+Expected result:
+
+- the report contains one ready candidate for the demo release checklist workflow;
+- the candidate shows at least three observations;
+- the candidate shows at least two distinct sessions;
+- the candidate status is `observed`;
+- the candidate recommendation is `propose`.
+
+If the report is empty, verify that the prompts were sent in distinct OpenClaw sessions. A `/reset` may clear chat context while keeping the same `sessionKey`, so it may still count as one session.
+
 ## Confidence
 
 The report score combines repeat count, distinct sessions, explicit corrections, day spread, and tool usage. A candidate is `ready` only when it passes the configured minimum occurrence/session thresholds and `minConfidence`.
