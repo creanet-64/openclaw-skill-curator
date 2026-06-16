@@ -1,13 +1,32 @@
 # Skill Curator
 
-Skill Curator observes successful OpenClaw agent turns and surfaces repeatable workflow candidates for human or Skill Workshop review.
+Skill Curator is a passive learning plugin for OpenClaw.
 
-It deliberately separates signal capture from skill activation:
+It watches successful agent conversations, detects tasks that keep coming back, and suggests them as reusable skill candidates. In practice, it helps OpenClaw notice patterns such as "the user often asks me to check Proxmox backups" and turn that repeated workflow into a pending Skill Workshop proposal.
+
+The goal is not to let the agent create or enable skills on its own. The plugin learns from repetition, prepares a candidate, and leaves the final decision to a human.
+
+## What it does
+
+Skill Curator turns repeated successful work into reviewable skill proposals:
+
+- it observes normal OpenClaw agent turns after they finish successfully;
+- it stores redacted snippets of procedural requests and outcomes;
+- it clusters similar observations across sessions;
+- it scores repeated workflows by confidence;
+- it reports candidates that look stable enough to become skills;
+- optionally, a daily cron can create pending Skill Workshop proposals for ready candidates.
+
+## What it does not do
+
+Skill Curator deliberately separates learning from activation:
 
 - observations are redacted snippets from successful procedural turns;
 - candidates are clustered observations with stable-ish IDs and confidence scores;
 - reviews record lifecycle decisions: `observed`, `proposed`, `approved`, `rejected`, `rolled_back`;
 - promotion into a real skill stays outside the observer and should go through the normal Skill Workshop flow.
+
+It never applies, installs, or enables a generated skill automatically.
 
 ## CLI
 
