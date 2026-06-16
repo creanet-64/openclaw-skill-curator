@@ -1,0 +1,34 @@
+{
+  "name": "openclaw-skill-curator",
+  "version": "0.2.0",
+  "description": "Observe successful OpenClaw turns and surface repeatable workflow candidates for Skill Workshop review.",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "skills",
+    "workflow",
+    "automation"
+  ],
+  "files": [
+    "README.md",
+    "index.js",
+    "lib",
+    "openclaw.plugin.json",
+    "package.json"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.6.6",
+      "minGatewayVersion": ">=2026.6.6"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

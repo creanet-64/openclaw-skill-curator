@@ -1,0 +1,51 @@
+{
+  "id": "skill-curator",
+  "name": "Skill Curator",
+  "description": "Observe successful OpenClaw turns and identify repeatable workflow candidates for Skill Workshop review.",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "databasePath": {
+        "type": "string"
+      },
+      "includeCron": {
+        "type": "boolean",
+        "default": false
+      },
+      "maxExcerptChars": {
+        "type": "integer",
+        "minimum": 120,
+        "maximum": 2000,
+        "default": 600
+      },
+      "minConfidence": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.7
+      },
+      "minOccurrences": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 20,
+        "default": 3
+      },
+      "minSessions": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20,
+        "default": 2
+      },
+      "similarityThreshold": {
+        "type": "number",
+        "minimum": 0.2,
+        "maximum": 1,
+        "default": 0.5
+      }
+    }
+  }
+}
