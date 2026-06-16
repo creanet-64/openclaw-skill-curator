@@ -5,6 +5,15 @@
   "private": false,
   "type": "module",
   "license": "MIT",
+  "author": "Jean-Christophe Laplace",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creanet-64/openclaw-skill-curator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/creanet-64/openclaw-skill-curator/issues"
+  },
+  "homepage": "https://github.com/creanet-64/openclaw-skill-curator#readme",
   "keywords": [
     "openclaw",
     "openclaw-plugin",
@@ -13,7 +22,10 @@
     "automation"
   ],
   "files": [
+    "CHANGELOG.md",
+    "LICENSE",
     "README.md",
+    "SECURITY.md",
     "index.js",
     "lib",
     "openclaw.plugin.json",
