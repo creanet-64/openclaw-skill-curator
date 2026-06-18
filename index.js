@@ -1,7 +1,7 @@
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
-import { buildObservation, isHeartbeatText } from "./lib/analysis.js";
+import { buildObservation, isIgnoredObservationText } from "./lib/analysis.js";
 import { installProposalSweepCron, uninstallProposalSweepCron } from "./lib/cron.js";
 import { buildCandidateReport } from "./lib/report.js";
 import { CuratorStore } from "./lib/store.js";
@@ -43,7 +43,7 @@ export default definePluginEntry({
         sessionKey: ctx.sessionKey,
         timestamp: Date.now(),
       });
-      if (!observation || isHeartbeatText(observation.excerpt)) return;
+      if (!observation || isIgnoredObservationText(observation.excerpt)) return;
       if (store.insert(observation)) {
         api.logger.debug(`captured reusable-workflow signal ${observation.id}`);
       }

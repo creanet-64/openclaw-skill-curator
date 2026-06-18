@@ -72,7 +72,39 @@ test("ignores pre-compaction memory flush prompts", () => {
   assert.equal(observation, null);
 });
 
-test("excludes stored heartbeat observations from candidate reports", () => {
+test("ignores scheduled cron prompts", () => {
+  const observation = buildObservation({
+    messages: [
+      { role: "user", content: "[cron:job-id nightly-openclaw-maintenance] Dans /home/alphadm/.openclaw/workspace, exécute via tool exec: openclaw tasks maintenance --apply." },
+      { role: "assistant", content: [{ type: "toolCall", name: "exec" }] },
+    ],
+    maxExcerptChars: 600,
+    runId: "cron-run",
+    agentId: "main",
+    sessionKey: "agent:main:cron",
+    timestamp: Date.UTC(2026, 5, 18),
+  });
+
+  assert.equal(observation, null);
+});
+
+test("ignores dream diary generation prompts", () => {
+  const observation = buildObservation({
+    messages: [
+      { role: "user", content: "Write a dream diary entry from these memory fragments: - Camille a choisi le nom Michel. Recurring themes: camille, cron." },
+      { role: "assistant", content: [{ type: "toolCall", name: "exec" }] },
+    ],
+    maxExcerptChars: 600,
+    runId: "dream-run",
+    agentId: "main",
+    sessionKey: "agent:main:dream",
+    timestamp: Date.UTC(2026, 5, 18),
+  });
+
+  assert.equal(observation, null);
+});
+
+test("excludes stored internal observations from candidate reports", () => {
   const useful = buildObservation({
     messages: [{ role: "user", content: "Vérifie les sauvegardes Proxmox et résume les erreurs éventuelles." }],
     maxExcerptChars: 600,
@@ -88,8 +120,22 @@ test("excludes stored heartbeat observations from candidate reports", () => {
     normalized: "heartbeat openclaw poll",
     tokens: ["heartbeat", "openclaw", "poll"],
   };
+  const cron = {
+    ...useful,
+    id: "old-cron-run",
+    excerpt: "[cron:job-id nightly-openclaw-maintenance] Dans /home/alphadm/.openclaw/workspace, exécute via tool exec: openclaw tasks maintenance --apply.",
+    normalized: "cron nightly openclaw maintenance",
+    tokens: ["cron", "nightly", "openclaw", "maintenance"],
+  };
+  const dream = {
+    ...useful,
+    id: "old-dream-run",
+    excerpt: "Write a dream diary entry from these memory fragments: - Camille a choisi le nom Michel.",
+    normalized: "write dream diary entry memory fragments camille michel",
+    tokens: ["write", "dream", "diary", "entry", "memory", "fragments", "camille", "michel"],
+  };
 
-  const report = buildCandidateReport([useful, heartbeat], { minConfidence: 0, minOccurrences: 1, minSessions: 1, similarityThreshold: 0.45 });
+  const report = buildCandidateReport([useful, heartbeat, cron, dream], { minConfidence: 0, minOccurrences: 1, minSessions: 1, similarityThreshold: 0.45 });
   assert.equal(report.observations, 1);
   assert.equal(report.candidates.length, 1);
   assert.equal(report.candidates[0].representative, useful.excerpt);

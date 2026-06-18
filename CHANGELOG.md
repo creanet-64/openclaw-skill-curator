@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Ignore internal cron and dream diary prompts during observation capture and candidate reports.
+
 ## 0.2.0 - 2026-06-16
 
 - Prepare the plugin for external packaging.
