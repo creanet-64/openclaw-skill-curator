@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1 - 2026-06-18
 
 - Ignore internal cron and dream diary prompts during observation capture and candidate reports.
 
