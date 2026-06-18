@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release, for example v0.2.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag
+        id: tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            tag="${{ inputs.tag }}"
+          else
+            tag="${GITHUB_REF_NAME}"
+          fi
+
+          case "$tag" in
+            v*) ;;
+            *)
+              echo "Tag must start with v, got: $tag" >&2
+              exit 1
+              ;;
+          esac
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Build release notes
+        shell: bash
+        run: |
+          version="${{ steps.tag.outputs.version }}"
+
+          awk -v version="$version" '
+            $0 ~ "^## " version "([[:space:]]|$)" { capture = 1; next }
+            capture && /^## / { exit }
+            capture { print }
+          ' CHANGELOG.md > RELEASE_NOTES.md
+
+          if [ ! -s RELEASE_NOTES.md ]; then
+            {
+              echo "Release ${{ steps.tag.outputs.tag }}"
+              echo
+              echo "See CHANGELOG.md for details."
+            } > RELEASE_NOTES.md
+          fi
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          tag="${{ steps.tag.outputs.tag }}"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists."
+            exit 0
+          fi
+
+          gh release create "$tag" \
+            --title "Skill Curator $tag" \
+            --notes-file RELEASE_NOTES.md \
+            --draft
