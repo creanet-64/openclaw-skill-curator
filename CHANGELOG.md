@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-06-19
+
+- Add `openclaw skill-curator sweep` to create pending Skill Workshop proposals directly from ready candidates.
+- Update the managed proposal sweep cron to call the native sweep command instead of relying on an agent prompt.
+- Skip candidates when an equivalent pending Skill Workshop proposal already exists.
+
 ## 0.2.1 - 2026-06-18
 
 - Ignore internal cron and dream diary prompts during observation capture and candidate reports.

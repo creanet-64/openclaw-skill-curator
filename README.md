@@ -33,6 +33,8 @@ It never applies, installs, or enables a generated skill automatically.
 ```bash
 openclaw skill-curator status
 openclaw skill-curator report --ready-only
+openclaw skill-curator sweep --dry-run --json
+openclaw skill-curator sweep --json
 openclaw skill-curator review skill-0123456789abcdef proposed --note "Candidate for Skill Workshop"
 openclaw skill-curator install-cron --json
 openclaw skill-curator uninstall-cron --json
@@ -51,8 +53,14 @@ openclaw skill-curator report --ready-only --json
 ```
 
 3. When a candidate is `ready` and `recommendation` is `propose`, inspect its evidence.
-4. Create or revise a Skill Workshop proposal from the candidate.
-5. Mark the candidate lifecycle state:
+4. Create pending Skill Workshop proposals from eligible candidates:
+
+```bash
+openclaw skill-curator sweep --dry-run --json
+openclaw skill-curator sweep --json
+```
+
+5. Or, if you create a proposal manually, mark the candidate lifecycle state:
 
 ```bash
 openclaw skill-curator review skill-0123456789abcdef proposed \
@@ -88,13 +96,20 @@ Defaults:
 - session target: `isolated`
 - delivery: none
 
-The installed cron asks an isolated agent to:
+The installed cron runs:
 
-- run `openclaw skill-curator report --ready-only --json`;
-- ignore candidates already `proposed`, `approved`, or `rejected`;
-- create compact pending Skill Workshop proposals for new `ready` candidates with `recommendation: propose`;
-- mark converted candidates as `proposed`;
-- never apply proposals automatically.
+```bash
+openclaw skill-curator sweep --json
+```
+
+The native sweep command:
+
+- reads ready candidates from the report pipeline;
+- ignores candidates already `proposed`, `approved`, or `rejected`;
+- skips candidates when an equivalent pending Skill Workshop proposal already exists;
+- creates compact pending Skill Workshop proposals for new `ready` candidates with `recommendation: propose`;
+- marks converted candidates as `proposed`;
+- never applies proposals automatically.
 
 The installer is idempotent. It detects existing jobs with the marker `managed-by=skill-curator.proposal-sweep`.
 

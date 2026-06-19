@@ -1,6 +1,6 @@
 {
   "name": "openclaw-skill-curator",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Observe successful OpenClaw turns and surface repeatable workflow candidates for Skill Workshop review.",
   "private": false,
   "type": "module",

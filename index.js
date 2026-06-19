@@ -5,6 +5,7 @@ import { buildObservation, isIgnoredObservationText } from "./lib/analysis.js";
 import { installProposalSweepCron, uninstallProposalSweepCron } from "./lib/cron.js";
 import { buildCandidateReport } from "./lib/report.js";
 import { CuratorStore } from "./lib/store.js";
+import { sweepReadyCandidates } from "./lib/sweep.js";
 
 const DEFAULTS = {
   includeCron: false,
@@ -87,6 +88,26 @@ export default definePluginEntry({
           }
           store.setReview({ candidateId, status, note: options.note ?? null, author: options.author });
           process.stdout.write(`Candidate ${candidateId} marked ${status}\n`);
+        });
+      command.command("sweep")
+        .description("Create pending Skill Workshop proposals for ready candidates")
+        .option("--days <days>", "Lookback window", "30")
+        .option("--min-confidence <score>", "Minimum confidence score")
+        .option("--min-occurrences <count>", "Minimum matching observations")
+        .option("--min-sessions <count>", "Minimum distinct sessions")
+        .option("--similarity <score>", "Jaccard similarity threshold")
+        .option("--dry-run", "Show what would be created without creating proposals", false)
+        .option("--json", "Output JSON", false)
+        .action((options) => {
+          const reportConfig = {
+            minConfidence: Number(options.minConfidence ?? config.minConfidence),
+            minOccurrences: Number(options.minOccurrences ?? config.minOccurrences),
+            minSessions: Number(options.minSessions ?? config.minSessions),
+            similarityThreshold: Number(options.similarity ?? config.similarityThreshold),
+          };
+          const report = buildCandidateReport(store.list({ sinceDays: Number(options.days) }), reportConfig, store.listReviews());
+          const result = sweepReadyCandidates({ report, store, dryRun: options.dryRun });
+          process.stdout.write(options.json ? `${JSON.stringify(result, null, 2)}\n` : `${result.proposalsCreated.length} proposal(s) created\n`);
         });
       command.command("install-cron")
         .description("Install the daily Skill Workshop proposal sweep cron")

@@ -7,6 +7,7 @@ import { buildObservation, classifyRequest, clusterObservations, redactText } fr
 import { buildCronAddArgs, buildCronEditArgs, installProposalSweepCron, uninstallProposalSweepCron } from "../lib/cron.js";
 import { buildCandidateReport } from "../lib/report.js";
 import { CuratorStore } from "../lib/store.js";
+import { buildProposalName, parseWorkshopProposalId, sweepReadyCandidates } from "../lib/sweep.js";
 
 test("detects French durable corrections", () => {
   const result = classifyRequest("Désormais, vérifie toujours le statut avant de répondre.", 0);
@@ -224,7 +225,7 @@ test("persists candidate lifecycle reviews and counts by status", () => {
   rmSync(directory, { recursive: true, force: true });
 });
 
-test("builds an isolated proposal sweep cron command", () => {
+test("builds a native proposal sweep cron command", () => {
   const args = buildCronAddArgs({ cron: "15 10 * * *", tz: "Europe/Paris", agent: "main", timeoutSeconds: 240 });
 
   assert.deepEqual(args.slice(0, 2), ["cron", "add"]);
@@ -300,4 +301,102 @@ test("proposal sweep cron uninstall removes managed jobs", () => {
   assert.equal(result.status, "removed");
   assert.deepEqual(result.removed, ["job-1"]);
   assert.deepEqual(calls.at(-1), ["cron", "rm", "job-1", "--json"]);
+});
+
+test("parses Skill Workshop proposal ids from supported JSON shapes", () => {
+  assert.equal(parseWorkshopProposalId(JSON.stringify({ id: "proposal-1" })), "proposal-1");
+  assert.equal(parseWorkshopProposalId(JSON.stringify({ record: { id: "proposal-2" } })), "proposal-2");
+  assert.equal(parseWorkshopProposalId(JSON.stringify({ proposal: { record: { id: "proposal-3" } } })), "proposal-3");
+});
+
+test("sweep dry-run reports eligible candidates without creating proposals", () => {
+  const candidate = {
+    id: "skill-demo",
+    key: "demo release checklist",
+    ready: true,
+    confidence: 0.9,
+    status: "observed",
+    recommendation: "propose",
+    occurrences: 3,
+    sessions: 2,
+    days: 2,
+    evidence: [],
+    representative: "Check this demo release checklist.",
+  };
+  const calls = [];
+  const run = (args) => {
+    calls.push(args);
+    return JSON.stringify({ proposals: [] });
+  };
+  const store = { setReview: () => assert.fail("dry-run must not set reviews") };
+
+  const result = sweepReadyCandidates({ report: { candidates: [candidate] }, store, dryRun: true, run });
+
+  assert.equal(result.eligible, 1);
+  assert.equal(result.proposalsCreated.length, 0);
+  assert.deepEqual(result.skipped, [{ candidateId: "skill-demo", reason: "dry-run", skillName: "demo-release-checklist" }]);
+  assert.deepEqual(calls, [["skills", "workshop", "list", "--json"]]);
+});
+
+test("sweep creates pending proposals and marks candidates proposed", () => {
+  const candidate = {
+    id: "skill-demo",
+    key: "demo release checklist",
+    ready: true,
+    confidence: 0.9,
+    status: "observed",
+    recommendation: "propose",
+    occurrences: 3,
+    sessions: 2,
+    days: 2,
+    evidence: [{ day: "2026-06-18", excerpt: "Check this demo release checklist." }],
+    representative: "Check this demo release checklist.",
+  };
+  const reviews = [];
+  const calls = [];
+  const run = (args) => {
+    calls.push(args);
+    if (args[0] === "skills" && args[1] === "workshop" && args[2] === "list") {
+      return JSON.stringify({ proposals: [] });
+    }
+    assert.deepEqual(args.slice(0, 3), ["skills", "workshop", "propose-create"]);
+    assert.ok(args.includes("--proposal"));
+    return JSON.stringify({ proposal: { record: { id: "demo-proposal-1" } } });
+  };
+  const store = { setReview: (review) => reviews.push(review) };
+
+  const result = sweepReadyCandidates({ report: { candidates: [candidate] }, store, run });
+
+  assert.deepEqual(result.proposalsCreated, [{ candidateId: "skill-demo", proposalId: "demo-proposal-1", skillName: "demo-release-checklist" }]);
+  assert.equal(result.errors.length, 0);
+  assert.equal(reviews[0].candidateId, "skill-demo");
+  assert.equal(reviews[0].status, "proposed");
+  assert.equal(reviews[0].author, "skill-curator-sweep");
+  assert.equal(calls.length, 2);
+});
+
+test("sweep skips candidates with equivalent active proposals", () => {
+  const candidate = {
+    id: "skill-demo",
+    key: "demo release checklist",
+    ready: true,
+    confidence: 0.9,
+    status: "observed",
+    recommendation: "propose",
+    occurrences: 3,
+    sessions: 2,
+    days: 2,
+    evidence: [],
+    representative: "Check this demo release checklist.",
+  };
+  const run = (args) => {
+    assert.deepEqual(args, ["skills", "workshop", "list", "--json"]);
+    return JSON.stringify({ proposals: [{ status: "pending", skillKey: buildProposalName(candidate) }] });
+  };
+  const store = { setReview: () => assert.fail("duplicate proposal must not set reviews") };
+
+  const result = sweepReadyCandidates({ report: { candidates: [candidate] }, store, run });
+
+  assert.deepEqual(result.skipped, [{ candidateId: "skill-demo", reason: "equivalent-active-proposal", skillName: "demo-release-checklist" }]);
+  assert.equal(result.proposalsCreated.length, 0);
 });
