@@ -186,9 +186,9 @@ clawhub package publish . \
   --owner creanet \
   --name openclaw-skill-curator \
   --display-name "OpenClaw Skill Curator" \
-  --version 0.3.0 \
+  --version 0.3.1 \
   --source-repo creanet-64/openclaw-skill-curator \
-  --source-ref v0.3.0 \
+  --source-ref v0.3.1 \
   --dry-run
 
 clawhub package publish . \
@@ -196,9 +196,9 @@ clawhub package publish . \
   --owner creanet \
   --name openclaw-skill-curator \
   --display-name "OpenClaw Skill Curator" \
-  --version 0.3.0 \
+  --version 0.3.1 \
   --source-repo creanet-64/openclaw-skill-curator \
-  --source-ref v0.3.0
+  --source-ref v0.3.1
 ```
 
 Users can then install with:

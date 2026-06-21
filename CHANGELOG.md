@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 - 2026-06-21
+
+- Add required ClawHub package build metadata for external code-plugin publication.
+- Document the correct ClawHub package publication command using the local package source and `creanet` owner.
+
 ## 0.3.0 - 2026-06-19
 
 - Add `openclaw skill-curator sweep` to create pending Skill Workshop proposals directly from ready candidates.
