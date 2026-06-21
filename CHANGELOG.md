@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3 - 2026-06-21
+
+- Clarify that Skill Curator is a pseudo-learning mechanism, similar in spirit to Hermes-style procedural memory, not model training or autonomous self-improvement.
+
 ## 0.3.2 - 2026-06-21
 
 - Simplify the README around the Skill Curator and Skill Workshop relationship.

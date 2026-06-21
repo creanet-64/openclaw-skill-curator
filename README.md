@@ -12,6 +12,8 @@ Skill Curator answers one question:
 
 > "Are we doing the same successful workflow often enough that it deserves a reusable skill?"
 
+Think of it as a pseudo-learning loop, similar in spirit to Hermes-style procedural memory. It is not model training, fine-tuning, or autonomous self-improvement. The plugin records repeated patterns, turns them into evidence-backed candidates, and asks Skill Workshop plus a human reviewer to decide what becomes durable.
+
 It does not write directly into your live skills. It only detects repeated workflows and, when asked, creates a pending Skill Workshop proposal.
 
 ![Skill Curator workflow](docs/skill-curator-flow.svg)
