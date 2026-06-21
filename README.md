@@ -133,6 +133,13 @@ openclaw skill-curator uninstall-cron --json
 
 ## Install
 
+From ClawHub:
+
+```bash
+openclaw plugins install clawhub:creanet/openclaw-skill-curator
+openclaw plugins inspect skill-curator --runtime --json
+```
+
 From a local checkout:
 
 ```bash
@@ -142,9 +149,25 @@ openclaw plugins inspect skill-curator --runtime --json
 
 After enabling or updating the plugin, restart or reload the Gateway so the startup hook is loaded by the running Gateway.
 
+The install command only installs the OpenClaw plugin and its CLI commands. It does not install a separate Codex/OpenClaw skill, does not create the daily cron job, and does not apply generated skills.
+
+To enable the optional daily proposal sweep, run:
+
+```bash
+openclaw skill-curator install-cron --json
+```
+
+The cron runs `openclaw skill-curator sweep --json`, which can create pending Skill Workshop proposals. Those proposals still require explicit human review before they are applied.
+
 ## Publish
 
-Before publishing, choose the final package owner/name. For ClawHub, scoped package names must match the publisher owner.
+The ClawHub package is published under the CREANET owner:
+
+```text
+creanet/openclaw-skill-curator
+```
+
+Support is provided on a best-effort basis. Issues and pull requests are welcome, but there is no guaranteed response time or maintenance commitment.
 
 Validate locally:
 
@@ -157,16 +180,31 @@ openclaw skill-curator install-cron --dry-run --json
 Publish with ClawHub:
 
 ```bash
-npm i -g clawhub
 clawhub login
-clawhub package publish <owner>/openclaw-skill-curator --dry-run
-clawhub package publish <owner>/openclaw-skill-curator
+clawhub package publish . \
+  --family code-plugin \
+  --owner creanet \
+  --name openclaw-skill-curator \
+  --display-name "OpenClaw Skill Curator" \
+  --version 0.3.0 \
+  --source-repo creanet-64/openclaw-skill-curator \
+  --source-ref v0.3.0 \
+  --dry-run
+
+clawhub package publish . \
+  --family code-plugin \
+  --owner creanet \
+  --name openclaw-skill-curator \
+  --display-name "OpenClaw Skill Curator" \
+  --version 0.3.0 \
+  --source-repo creanet-64/openclaw-skill-curator \
+  --source-ref v0.3.0
 ```
 
 Users can then install with:
 
 ```bash
-openclaw plugins install clawhub:<owner>/openclaw-skill-curator
+openclaw plugins install clawhub:creanet/openclaw-skill-curator
 ```
 
 ## End-to-end test
