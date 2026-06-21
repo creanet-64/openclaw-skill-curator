@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 - 2026-06-21
+
+- Simplify the README around the Skill Curator and Skill Workshop relationship.
+- Add a visual workflow diagram showing observation, proposal, and human review boundaries.
+
 ## 0.3.1 - 2026-06-21
 
 - Add required ClawHub package build metadata for external code-plugin publication.

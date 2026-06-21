@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="420" viewBox="0 0 1040 420" role="img" aria-labelledby="title desc">
+  <title id="title">Skill Curator and Skill Workshop workflow</title>
+  <desc id="desc">Skill Curator observes successful OpenClaw turns, groups repeated workflows into candidates, creates pending Skill Workshop proposals, and waits for human review before any skill is applied.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .lane { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .box { fill: #ffffff; stroke: #64748b; stroke-width: 1.6; rx: 8; }
+      .input { fill: #eef6ff; stroke: #2563eb; }
+      .process { fill: #f8fafc; stroke: #475569; }
+      .proposal { fill: #f0fdf4; stroke: #16a34a; }
+      .human { fill: #fff7ed; stroke: #ea580c; }
+      .guard { fill: #fef2f2; stroke: #dc2626; stroke-dasharray: 6 5; }
+      .title { fill: #0f172a; font: 700 22px Arial, sans-serif; }
+      .lane-title { fill: #334155; font: 700 15px Arial, sans-serif; }
+      .label { fill: #0f172a; font: 700 15px Arial, sans-serif; }
+      .small { fill: #475569; font: 13px Arial, sans-serif; }
+      .tiny { fill: #64748b; font: 12px Arial, sans-serif; }
+      .arrow { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1040" height="420"/>
+  <text class="title" x="40" y="42">Skill Curator keeps learning separate from activation</text>
+
+  <rect class="lane" x="40" y="70" width="960" height="112" rx="8"/>
+  <text class="lane-title" x="60" y="98">Normal OpenClaw use</text>
+  <rect class="box input" x="70" y="118" width="200" height="46"/>
+  <text class="label" x="94" y="146">Successful turns</text>
+
+  <rect class="lane" x="40" y="196" width="960" height="112" rx="8"/>
+  <text class="lane-title" x="60" y="224">Skill Curator</text>
+  <rect class="box process" x="325" y="238" width="180" height="48"/>
+  <text class="label" x="353" y="257">Observe</text>
+  <text class="small" x="353" y="276">redact snippets</text>
+  <rect class="box process" x="555" y="238" width="180" height="48"/>
+  <text class="label" x="588" y="257">Cluster</text>
+  <text class="small" x="588" y="276">score repetition</text>
+  <rect class="box process" x="785" y="238" width="160" height="48"/>
+  <text class="label" x="817" y="257">Candidate</text>
+  <text class="small" x="817" y="276">ready to propose</text>
+
+  <rect class="lane" x="40" y="322" width="960" height="74" rx="8"/>
+  <text class="lane-title" x="60" y="350">Skill Workshop and human review</text>
+  <rect class="box proposal" x="335" y="358" width="205" height="28"/>
+  <text class="label" x="360" y="378">Pending proposal</text>
+  <rect class="box human" x="600" y="358" width="185" height="28"/>
+  <text class="label" x="628" y="378">Human decision</text>
+  <rect class="box guard" x="820" y="340" width="150" height="46"/>
+  <text class="small" x="847" y="360">No automatic</text>
+  <text class="small" x="853" y="377">skill apply</text>
+
+  <path class="arrow" d="M 270 141 C 320 141 305 262 325 262"/>
+  <path class="arrow" d="M 505 262 L 555 262"/>
+  <path class="arrow" d="M 735 262 L 785 262"/>
+  <path class="arrow" d="M 865 286 C 865 328 560 323 493 358"/>
+  <path class="arrow" d="M 540 372 L 600 372"/>
+  <path class="arrow" d="M 785 372 L 820 365"/>
+
+  <text class="tiny" x="302" y="132">agent_end hook</text>
+  <text class="tiny" x="762" y="322">sweep command or cron</text>
+  <text class="tiny" x="605" y="405">apply, reject, revise, or quarantine</text>
+</svg>

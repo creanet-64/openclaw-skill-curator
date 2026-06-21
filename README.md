@@ -6,6 +6,41 @@ It watches successful agent conversations, detects tasks that keep coming back, 
 
 The goal is not to let the agent create or enable skills on its own. The plugin learns from repetition, prepares a candidate, and leaves the final decision to a human.
 
+## The short version
+
+Skill Curator answers one question:
+
+> "Are we doing the same successful workflow often enough that it deserves a reusable skill?"
+
+It does not write directly into your live skills. It only detects repeated workflows and, when asked, creates a pending Skill Workshop proposal.
+
+![Skill Curator workflow](docs/skill-curator-flow.svg)
+
+## What is Skill Workshop?
+
+Skill Workshop is OpenClaw's review area for reusable skills.
+
+A Skill Workshop proposal is a draft skill waiting for a human decision. You can inspect it, revise it, apply it, reject it, or quarantine it. Until someone explicitly applies a proposal, it is not an active skill.
+
+Skill Curator uses Skill Workshop as a safety gate:
+
+- Skill Curator detects repeated successful work;
+- Skill Curator can create a pending proposal;
+- Skill Workshop holds that proposal for review;
+- a human decides whether it becomes a real skill.
+
+That separation is intentional. The plugin can learn and suggest, but it does not grant itself new abilities.
+
+## Workflow at a glance
+
+1. You use OpenClaw normally.
+2. Skill Curator observes successful procedural turns and redacts sensitive-looking data.
+3. Similar observations are grouped into candidates.
+4. A candidate becomes `ready` when it repeats enough across sessions.
+5. `openclaw skill-curator sweep` can create a pending Skill Workshop proposal.
+6. A human reviews the proposal in Skill Workshop.
+7. Only explicit approval applies the skill.
+
 ## What it does
 
 Skill Curator turns repeated successful work into reviewable skill proposals:
@@ -40,7 +75,7 @@ openclaw skill-curator install-cron --json
 openclaw skill-curator uninstall-cron --json
 ```
 
-## Review flow
+## Manual review flow
 
 Use Skill Curator as a detector, not as an automatic installer.
 
