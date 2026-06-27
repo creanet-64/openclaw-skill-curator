@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4 - 2026-06-27
+
+- Add the `skill-curator` runtime command alias to the published manifest so OpenClaw interfaces can surface the plugin entry.
+
 ## 0.3.3 - 2026-06-21
 
 - Clarify that Skill Curator is a pseudo-learning mechanism, similar in spirit to Hermes-style procedural memory, not model training or autonomous self-improvement.

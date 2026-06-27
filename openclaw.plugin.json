@@ -5,6 +5,13 @@
   "activation": {
     "onStartup": true
   },
+  "commandAliases": [
+    {
+      "name": "skill-curator",
+      "kind": "runtime-slash",
+      "cliCommand": "skill-curator"
+    }
+  ],
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
